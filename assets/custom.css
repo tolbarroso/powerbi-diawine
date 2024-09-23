@@ -1,3 +1,4 @@
+/* Estilos gerais */
 body {
     background-color: black;
     font-family: 'Arial', sans-serif;
@@ -5,12 +6,36 @@ body {
     padding: 0;
 }
 
+/* Barra de navegação */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #151D52;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    height: 50px;
+    width: auto;
+}
+
+.nav-title {
+    color: #F6C62D;
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+/* Título da página */
 .title {
     text-align: center;
     color: #F6C62D;
     padding: 20px;
 }
 
+/* Filtros */
 .filter-label {
     color: #FFFFFF;
 }
@@ -29,8 +54,13 @@ body {
 .dropdown {
     width: 100%;
     background-color: #151D52;
+    color: #FFFFFF;
+    border: 1px solid #F6C62D;
+    border-radius: 4px;
+    padding: 10px;
 }
 
+/* Grid de gráficos */
 .grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -38,6 +68,7 @@ body {
     padding: 20px;
 }
 
+/* Botão de exportação */
 .pdf-button {
     background-color: #F6C62D;
     color: black;
@@ -48,8 +79,30 @@ body {
     display: block;
     margin: 30px auto;
     transition: background-color 0.3s ease;
+    border-radius: 5px;
 }
 
 .pdf-button:hover {
     background-color: #D4A62A;
+}
+
+/* Ajustes de responsividade */
+@media screen and (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .nav-title {
+        margin-left: 0;
+    }
+
+    .filters-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
 }
