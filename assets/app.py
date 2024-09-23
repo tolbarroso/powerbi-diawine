@@ -7,6 +7,12 @@ app = Dash(__name__)
 
 # Define o layout do aplicativo
 app.layout = html.Div([
+    # Barra de navegação com logo e título
+    html.Div([
+        html.Img(src='/assets/logo.png', className='logo'),
+        html.H1('Dashboard Dia Wine', className='nav-title'),
+    ], className='navbar'),
+    
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
