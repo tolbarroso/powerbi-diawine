@@ -4,15 +4,10 @@ from layouts.layout_inicial import layout_inicial
 from callbacks import atualizar_graficos, exportar_pdf
 
 app = Dash(__name__)
+app.title = "Dashboard Dia Wine"  # Define o título da aba do navegador
 
-# Define o layout do aplicativo
+# Define o layout do aplicativo sem a barra de navegação
 app.layout = html.Div([
-    # Barra de navegação com logo e título
-    html.Div([
-        html.Img(src='/assets/logo.png', className='logo'),
-        html.H1('Dashboard Dia Wine', className='nav-title'),
-    ], className='navbar'),
-    
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
