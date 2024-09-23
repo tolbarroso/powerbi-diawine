@@ -1,6 +1,6 @@
 import pandas as pd
 from dash import Output, Input
-from util.utils import gerar_comparativo, gerar_produtos_vendidos, gerar_ticket_medio, gerar_vendas_ano, gerar_vendas_mes
+from utils import gerar_comparativo, gerar_produtos_vendidos, gerar_ticket_medio, gerar_vendas_ano, gerar_vendas_mes
 
 # Carrega os dados da planilha
 df = pd.read_excel('dados_dia_wine.xlsx')
