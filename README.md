@@ -6,16 +6,27 @@ O **Dia Wine Dashboard** é uma aplicação web interativa desenvolvida em Pytho
 
 ## Estrutura do Projeto
 dia_wine_dashboard/ 
+
 ├── dados_dia_wine.xlsx # Planilha com dados de vendas 
+
 ├── app.py # Código principal da aplicação 
+
 ├── layouts/ # Contém os layouts da aplicação 
+
 │      ├── layout_inicial.py # Layout inicial do dashboard 
+
 │      └── filtros.py # Componentes de filtro 
+
 ├── callbacks/ # Contém os callbacks da aplicação 
+
 │      ├── atualizar_graficos.py # Atualização dos gráficos
+
 │      └── exportar_pdf.py # Exportação para PDF 
+
 ├── assets/ # Arquivos estáticos 
+
 │      └── custom.css # Estilos personalizados 
+
 └── requisitos.txt # Dependências do projeto
 
 
