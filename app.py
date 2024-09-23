@@ -2,7 +2,7 @@ from dash import Dash, dcc, html
 from layouts.layout_inicial import layout_inicial
 from callbacks import atualizar_graficos, exportar_pdf
 
-app = Dash(__name__)
+app = Dash(__name__, external_stylesheets=['/assets/custom.css'])
 
 # Define o layout do aplicativo
 app.layout = html.Div([
@@ -10,13 +10,13 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
-# Carrega o layout inicial
+# Callback para mudar a página com base no pathname
 @app.callback(
     output=Output('page-content', 'children'),
-    inputs=[Input('url', 'pathname')]
+    inputs=[input('url', 'pathname')]
 )
 def display_page(pathname):
-    return layout_inicial if pathname == '/' else '404 - Página não encontrada'
+    return layout_inicial() if pathname == '/' else '404 - Página não encontrada'
 
 # Registra os callbacks
 atualizar_graficos.registrar_callbacks(app)
