@@ -6,16 +6,27 @@ O **Dia Wine Dashboard** é uma aplicação web interativa desenvolvida em Pytho
 
 ## Estrutura do Projeto
 dia_wine_dashboard/ 
+
 ├── dados_dia_wine.xlsx # Planilha com dados de vendas 
+
 ├── app.py # Código principal da aplicação 
+
 ├── layouts/ # Contém os layouts da aplicação 
+
 │      ├── layout_inicial.py # Layout inicial do dashboard 
+
 │      └── filtros.py # Componentes de filtro 
+
 ├── callbacks/ # Contém os callbacks da aplicação 
+
 │      ├── atualizar_graficos.py # Atualização dos gráficos
+
 │      └── exportar_pdf.py # Exportação para PDF 
+
 ├── assets/ # Arquivos estáticos 
+
 │      └── custom.css # Estilos personalizados 
+
 └── requisitos.txt # Dependências do projeto
 
 
@@ -26,19 +37,19 @@ Para instalar e executar a aplicação, siga os passos abaixo:
 1. **Clone o repositório:**
 
    ```bash
-   git clone <url-do-repositorio>
-   cd dia_wine_dashboard
+   git clone <[url-do-repositorio](https://github.com/tolbarroso/powerbi-diawine/)>
+   cd powerbi-diawine
 
 2. **Crie um ambiente virtual:**
     ```bash
     python -m venv venv
 
 3. **Ative o ambiente virtual:**
-    ```bash
-    No Windows:
+No Windows:
+   ```bash
     venv\Scripts\activate
 
-4. **Instale as dependências:**
+5. **Instale as dependências:**
     ```bash
     pip install -r requisitos.txt
 
@@ -67,4 +78,4 @@ Este projeto está sob a Licença MIT. Veja o arquivo LICENSE para mais detalhes
 Contato
 Para mais informações, entre em contato através de carolbarrosowork@gmail.com.
 
-Sinta-se à vontade para substituir `<https://github.com/tolbarroso/powerbi-diawine>` e o email pelo seu contato real. Se precisar de mais alguma coisa, é só avisar!
+Sinta-se à vontade para substituir `<[url-do-repositorio](https://github.com/tolbarroso/powerbi-diawine/)>` e o email pelo seu contato real. Se precisar de mais alguma coisa, é só avisar!
