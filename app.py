@@ -42,7 +42,7 @@ app.layout = dbc.Container([
         ], width=4),
 
         dbc.Col([
-            html.Label("Quantidade Vendida", style={'color': '#FFFFFF'}),
+            html.Label("Qt. Vendida", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-qt_vendida',
                 options=[{'label': str(vendida), 'value': vendida} for vendida in df['Qt. Vendida'].unique()],
