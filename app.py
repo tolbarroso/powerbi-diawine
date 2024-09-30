@@ -8,6 +8,7 @@ import pdfkit
 
 # Carregar os dados da planilha Excel
 df = pd.read_excel('planilhas/dados_dia_wine.xlsx', sheet_name='Vendas')
+df.columns = df.columns.str.strip()  # Remover espaços em branco nos nomes das colunas
 print(df.columns.tolist())  # Verifique os nomes das colunas
 
 # Inicializando a aplicação Dash
@@ -25,7 +26,7 @@ app.layout = dbc.Container([
             html.Label("Código", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-codigo',
-                options=[{'label': str(codigo), 'value': codigo} for codigo in df['Código'].unique()],
+                options=[{'label': str(codigo), 'value': codigo} for codigo in df['Código'].unique() if pd.notnull(codigo)],
                 multi=True,
                 value=[]
             )
@@ -35,7 +36,7 @@ app.layout = dbc.Container([
             html.Label("Nome", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-nome',
-                options=[{'label': nome, 'value': nome} for nome in df['Nome'].unique()],
+                options=[{'label': nome, 'value': nome} for nome in df['Nome'].unique() if pd.notnull(nome)],
                 multi=True,
                 value=[]
             )
@@ -45,7 +46,7 @@ app.layout = dbc.Container([
             html.Label("Qt. Vendida", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-qt_vendida',
-                options=[{'label': str(vendida), 'value': vendida} for vendida in df['Qt. Vendida'].unique()],
+                options=[{'label': str(vendida), 'value': vendida} for vendida in df['Qt. Vendida'].unique() if pd.notnull(vendida)],
                 multi=True,
                 value=[]
             )
@@ -89,7 +90,7 @@ def update_graphs(selected_codigos, selected_nomes, selected_vendidas):
         filtered_df = filtered_df[filtered_df['Qt. Vendida'].isin(selected_vendidas)]
 
     vendas_fig = px.line(filtered_df, x='Nome', y='Qt. Vendida', title="Vendas por Nome")
-    ticket_medio_fig = px.bar(filtered_df, x='Nome', y='Vl. Vendido', title="Valor Vendido por Nome")
+    ticket_medio_fig = px.bar(filtered_df, x='Nome', y='Vl.Vendido', title="Valor Vendido por Nome")
     mix_vendas_fig = px.pie(filtered_df, names='Nome', values='Qt. Vendida', title="Mix de Vendas")
     positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='Nome', title="Positivação por Vendedor")
 
