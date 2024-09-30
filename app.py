@@ -18,9 +18,11 @@ config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkh
 
 # Remover os valores NaN da coluna 'Qt. Vendida'
 qt_vendida_unique = df['Qt. Vendida'].dropna().unique()
-
-# Certifique-se de que os valores são convertidos em string
 options_vendida = [{'label': str(vendida), 'value': vendida} for vendida in qt_vendida_unique]
+
+# Remover os valores NaN da coluna 'Nome'
+nome_unique = df['Nome'].dropna().unique()
+options_nome = [{'label': nome, 'value': nome} for nome in nome_unique]
 
 # Layout do Dashboard
 app.layout = dbc.Container([
@@ -44,7 +46,7 @@ app.layout = dbc.Container([
             html.Label("Nome", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-nome',
-                options=[{'label': nome, 'value': nome} for nome in df['Nome'].unique()],
+                options=options_nome,  # Usando a lista corrigida
                 multi=True,
                 value=[]
             )
