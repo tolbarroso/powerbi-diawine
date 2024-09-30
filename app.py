@@ -8,6 +8,7 @@ import pdfkit
 
 # Carregar os dados da planilha Excel
 df = pd.read_excel('planilhas/dados_dia_wine.xlsx', sheet_name='Vendas')
+print(df.columns.tolist())  # Verifique os nomes das colunas
 
 # Inicializando a aplicação Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
@@ -21,30 +22,30 @@ app.layout = dbc.Container([
 
     dbc.Row([
         dbc.Col([
-            html.Label("Equipe", style={'color': '#FFFFFF'}),
+            html.Label("Código", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
-                id='filter-equipe',
-                options=[{'label': equipe, 'value': equipe} for equipe in df['Equipe'].unique()],
+                id='filter-codigo',
+                options=[{'label': str(codigo), 'value': codigo} for codigo in df['Código'].unique()],
                 multi=True,
                 value=[]
             )
         ], width=4),
         
         dbc.Col([
-            html.Label("RCA", style={'color': '#FFFFFF'}),
+            html.Label("Nome", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
-                id='filter-rca',
-                options=[{'label': rca, 'value': rca} for rca in df['RCA'].unique()],
+                id='filter-nome',
+                options=[{'label': nome, 'value': nome} for nome in df['Nome'].unique()],
                 multi=True,
                 value=[]
             )
         ], width=4),
 
         dbc.Col([
-            html.Label("Departamento", style={'color': '#FFFFFF'}),
+            html.Label("Quantidade Vendida", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
-                id='filter-departamento',
-                options=[{'label': dep, 'value': dep} for dep in df['Departamento'].unique()],
+                id='filter-qt_vendida',
+                options=[{'label': str(vendida), 'value': vendida} for vendida in df['Qt. Vendida'].unique()],
                 multi=True,
                 value=[]
             )
@@ -73,24 +74,24 @@ app.layout = dbc.Container([
      Output('ticket-medio', 'figure'),
      Output('mix-vendas', 'figure'),
      Output('positivacao', 'figure')],
-    [Input('filter-equipe', 'value'),
-     Input('filter-rca', 'value'),
-     Input('filter-departamento', 'value')]
+    [Input('filter-codigo', 'value'),
+     Input('filter-nome', 'value'),
+     Input('filter-qt_vendida', 'value')]
 )
-def update_graphs(selected_equipes, selected_rcas, selected_departamentos):
+def update_graphs(selected_codigos, selected_nomes, selected_vendidas):
     filtered_df = df
 
-    if selected_equipes:
-        filtered_df = filtered_df[filtered_df['Equipe'].isin(selected_equipes)]
-    if selected_rcas:
-        filtered_df = filtered_df[filtered_df['RCA'].isin(selected_rcas)]
-    if selected_departamentos:
-        filtered_df = filtered_df[filtered_df['Departamento'].isin(selected_departamentos)]
+    if selected_codigos:
+        filtered_df = filtered_df[filtered_df['Código'].isin(selected_codigos)]
+    if selected_nomes:
+        filtered_df = filtered_df[filtered_df['Nome'].isin(selected_nomes)]
+    if selected_vendidas:
+        filtered_df = filtered_df[filtered_df['Qt. Vendida'].isin(selected_vendidas)]
 
-    vendas_fig = px.line(filtered_df, x='Período', y='Vendas', title="Vendas por Período")
-    ticket_medio_fig = px.bar(filtered_df, x='Período', y='Ticket Médio', title="Ticket Médio por Período")
-    mix_vendas_fig = px.pie(filtered_df, names='Produto', values='Vendas', title="Mix de Vendas")
-    positivacao_fig = px.scatter(filtered_df, x='Vendas', y='Positivação', color='Vendedor', title="Positivação por Vendedor")
+    vendas_fig = px.line(filtered_df, x='Nome', y='Qt. Vendida', title="Vendas por Nome")
+    ticket_medio_fig = px.bar(filtered_df, x='Nome', y='Vl. Vendido', title="Valor Vendido por Nome")
+    mix_vendas_fig = px.pie(filtered_df, names='Nome', values='Qt. Vendida', title="Mix de Vendas")
+    positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='Nome', title="Positivação por Vendedor")
 
     return vendas_fig, ticket_medio_fig, mix_vendas_fig, positivacao_fig
 
