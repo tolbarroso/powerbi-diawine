@@ -16,14 +16,6 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
 # Configure the path to wkhtmltopdf executable
 config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')  # Verifique se este caminho está correto
 
-# Remover os valores NaN da coluna 'Qt. Vendida'
-qt_vendida_unique = df['Qt. Vendida'].dropna().unique()
-options_vendida = [{'label': str(vendida), 'value': vendida} for vendida in qt_vendida_unique]
-
-# Remover os valores NaN da coluna 'Nome'
-nome_unique = df['Nome'].dropna().unique()
-options_nome = [{'label': nome, 'value': nome} for nome in nome_unique]
-
 # Layout do Dashboard
 app.layout = dbc.Container([
     dbc.Row([
@@ -46,7 +38,7 @@ app.layout = dbc.Container([
             html.Label("Nome", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-nome',
-                options=options_nome,  # Usando a lista corrigida
+                options=[{'label': nome, 'value': nome} for nome in df['Nome'].unique()],
                 multi=True,
                 value=[]
             )
@@ -56,7 +48,7 @@ app.layout = dbc.Container([
             html.Label("Qt. Vendida", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-qt_vendida',
-                options=options_vendida,  # Usando a lista corrigida
+                options=[{'label': str(vendida), 'value': vendida} for vendida in df['Qt. Vendida'].unique() if pd.notna(vendida)],
                 multi=True,
                 value=[]
             )
@@ -100,7 +92,7 @@ def update_graphs(selected_codigos, selected_nomes, selected_vendidas):
         filtered_df = filtered_df[filtered_df['Qt. Vendida'].isin(selected_vendidas)]
 
     vendas_fig = px.line(filtered_df, x='Nome', y='Qt. Vendida', title="Vendas por Nome")
-    ticket_medio_fig = px.bar(filtered_df, x='Nome', y='Vl. Vendido', title="Valor Vendido por Nome")
+    ticket_medio_fig = px.bar(filtered_df, x='Nome', y='Vl.Vendido', title="Valor Vendido por Nome")  # Correção aqui
     mix_vendas_fig = px.pie(filtered_df, names='Nome', values='Qt. Vendida', title="Mix de Vendas")
     positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='Nome', title="Positivação por Vendedor")
 
