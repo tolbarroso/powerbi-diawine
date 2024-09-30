@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório - Dia Wine</title>
+    <title>Relatório Dia Wine</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,43 +11,32 @@
             color: #FFFFFF;
         }
         h1 {
-            color: #F6C62D;
             text-align: center;
+            color: #F6C62D;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            color: #FFFFFF;
-        }
-        table, th, td {
-            border: 1px solid #FFFFFF;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #F6C62D;
-            color: #151D52;
+        .chart {
+            margin: 20px auto;
+            width: 80%;
         }
     </style>
 </head>
 <body>
     <h1>Relatório Dia Wine</h1>
-    <p>Resumo das vendas e métricas.</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Período</th>
-                <th>Vendas</th>
-                <th>Ticket Médio</th>
-                <th>Positivação</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Dados dinâmicos -->
-        </tbody>
-    </table>
+    <div class="chart">
+        <h2>Vendas por Nome</h2>
+        <img src="vendas_plot.png" alt="Gráfico de Vendas">
+    </div>
+    <div class="chart">
+        <h2>Valor Vendido por Nome</h2>
+        <img src="ticket_medio_plot.png" alt="Gráfico de Ticket Médio">
+    </div>
+    <div class="chart">
+        <h2>Mix de Vendas</h2>
+        <img src="mix_vendas_plot.png" alt="Gráfico de Mix de Vendas">
+    </div>
+    <div class="chart">
+        <h2>Positivação por Vendedor</h2>
+        <img src="positivacao_plot.png" alt="Gráfico de Positivação">
+    </div>
 </body>
 </html>
