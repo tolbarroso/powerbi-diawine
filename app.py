@@ -29,7 +29,7 @@ app.layout = dbc.Container([
             html.Label("Código", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-codigo',
-                options=[{'label': str(codigo), 'value': codigo} for codigo in df['Código'].unique()],
+                options=[{'label': str(codigo), 'value': codigo} for codigo in df['Código'].unique() if pd.notna(codigo)],
                 multi=True,
                 value=[]
             )
@@ -39,7 +39,7 @@ app.layout = dbc.Container([
             html.Label("Nome", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-nome',
-                options=[{'label': nome, 'value': nome} for nome in df['Nome'].unique()],
+                options=[{'label': nome, 'value': nome} for nome in df['Nome'].unique() if pd.notna(nome)],
                 multi=True,
                 value=[]
             )
