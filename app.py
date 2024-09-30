@@ -8,7 +8,8 @@ import pdfkit
 
 # Carregar os dados da planilha Excel
 df = pd.read_excel('planilhas/dados_dia_wine.xlsx', sheet_name='Vendas')
-print(df.columns.tolist())  # Verifique os nomes das colunas
+print("Colunas do DataFrame:", df.columns.tolist())  # Verifique os nomes das colunas
+print("Dados carregados:", df.head())  # Verifique se os dados estão corretos
 
 # Inicializando a aplicação Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
@@ -55,7 +56,7 @@ app.layout = dbc.Container([
         ], width=4)
     ], className='mb-4'),
 
-    dbc.Row([  # Gráficos
+    dbc.Row([
         dbc.Col(dcc.Graph(id='vendas-periodo'), width=6),
         dbc.Col(dcc.Graph(id='ticket-medio'), width=6)
     ], className='mb-4'),
@@ -91,16 +92,12 @@ def update_graphs(selected_codigos, selected_nomes, selected_vendidas):
     if selected_vendidas:
         filtered_df = filtered_df[filtered_df['Qt. Vendida'].isin(selected_vendidas)]
 
+    print("Dados filtrados:", filtered_df.head())  # Adicione isso para verificar o DataFrame filtrado
+
     vendas_fig = px.line(filtered_df, x='Nome', y='Qt. Vendida', title="Vendas por Nome")
-    ticket_medio_fig = px.bar(filtered_df, x='Nome', y='Vl.Vendido', title="Valor Vendido por Nome")
+    ticket_medio_fig = px.bar(filtered_df, x='Nome', y='Vl.Vendido', title="Valor Vendido por Nome")  # Correção aqui
     mix_vendas_fig = px.pie(filtered_df, names='Nome', values='Qt. Vendida', title="Mix de Vendas")
     positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='Nome', title="Positivação por Vendedor")
-
-    # Salvar os gráficos como imagens
-    pio.write_image(vendas_fig, 'vendas_plot.png')
-    pio.write_image(ticket_medio_fig, 'ticket_medio_plot.png')
-    pio.write_image(mix_vendas_fig, 'mix_vendas_plot.png')
-    pio.write_image(positivacao_fig, 'positivacao_plot.png')
 
     return vendas_fig, ticket_medio_fig, mix_vendas_fig, positivacao_fig
 
@@ -110,9 +107,6 @@ def update_graphs(selected_codigos, selected_nomes, selected_vendidas):
     prevent_initial_call=True
 )
 def export_pdf(n_clicks):
-    # Gere os gráficos antes de exportar o PDF
-    update_graphs(None, None, None)  # Chame a função para garantir que os gráficos são salvos
-
     pdf_file = 'report.pdf'
     pdfkit.from_file('templates/layout.html', pdf_file, configuration=config)  # Verifique se o caminho para o layout.html está correto
     return dcc.send_file(pdf_file)
