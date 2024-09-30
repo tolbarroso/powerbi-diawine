@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 import pdfkit  
 
 # Carregar os dados da planilha Excel
-df = pd.read_excel('planilhas/dados_dia_wine.xlsx', sheet_name=None)
+df = pd.read_excel('planilhas/dados_dia_wine.xlsx', sheet_name='Vendas')
 
 # Inicializando a aplicação Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
@@ -24,7 +24,7 @@ app.layout = dbc.Container([
             html.Label("Equipe", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-equipe',
-                options=[{'label': row['Nome'], 'value': row['Código']} for _, row in df['Vendas'].iterrows()],
+                options=[{'label': equipe, 'value': equipe} for equipe in df['Equipe'].unique()],
                 multi=True,
                 value=[]
             )
@@ -34,7 +34,7 @@ app.layout = dbc.Container([
             html.Label("RCA", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-rca',
-                options=[{'label': rca, 'value': rca} for rca in df['RCA']['RCA'].unique()],  # Supondo que a aba 'RCA' exista
+                options=[{'label': rca, 'value': rca} for rca in df['RCA'].unique()],
                 multi=True,
                 value=[]
             )
@@ -44,7 +44,7 @@ app.layout = dbc.Container([
             html.Label("Departamento", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-departamento',
-                options=[{'label': dep, 'value': dep} for dep in df['Departamentos']['Departamento'].unique()],  # Supondo que a aba 'Departamentos' exista
+                options=[{'label': dep, 'value': dep} for dep in df['Departamento'].unique()],
                 multi=True,
                 value=[]
             )
@@ -78,18 +78,19 @@ app.layout = dbc.Container([
      Input('filter-departamento', 'value')]
 )
 def update_graphs(selected_equipes, selected_rcas, selected_departamentos):
-    filtered_df = df['Vendas']
+    filtered_df = df
+
     if selected_equipes:
-        filtered_df = filtered_df[filtered_df['Código'].isin(selected_equipes)]
+        filtered_df = filtered_df[filtered_df['Equipe'].isin(selected_equipes)]
     if selected_rcas:
         filtered_df = filtered_df[filtered_df['RCA'].isin(selected_rcas)]
     if selected_departamentos:
         filtered_df = filtered_df[filtered_df['Departamento'].isin(selected_departamentos)]
 
-    vendas_fig = px.line(filtered_df, x='Período', y='Qt. Vendida', title="Vendas por Período")
-    ticket_medio_fig = px.bar(filtered_df, x='Período', y='Vl.Vendido', title="Ticket Médio por Período")
-    mix_vendas_fig = px.pie(filtered_df, names='Nome', values='Qt. Vendida', title="Mix de Vendas")
-    positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='Nome', title="Positivação por Vendedor")
+    vendas_fig = px.line(filtered_df, x='Período', y='Vendas', title="Vendas por Período")
+    ticket_medio_fig = px.bar(filtered_df, x='Período', y='Ticket Médio', title="Ticket Médio por Período")
+    mix_vendas_fig = px.pie(filtered_df, names='Produto', values='Vendas', title="Mix de Vendas")
+    positivacao_fig = px.scatter(filtered_df, x='Vendas', y='Positivação', color='Vendedor', title="Positivação por Vendedor")
 
     return vendas_fig, ticket_medio_fig, mix_vendas_fig, positivacao_fig
 
