@@ -14,7 +14,7 @@ print(df.columns.tolist())  # Verifique os nomes das colunas
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
 
 # Configure the path to wkhtmltopdf executable
-config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')  # Verifique se este caminho está correto
 
 # Layout do Dashboard
 app.layout = dbc.Container([
@@ -24,7 +24,7 @@ app.layout = dbc.Container([
     ], justify="between", align="center", className='mb-4'),
 
     dbc.Row([
-        dbc.Col([
+        dbc.Col([  # Filtro Código
             html.Label("Código", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-codigo',
@@ -34,7 +34,7 @@ app.layout = dbc.Container([
             )
         ], width=4),
         
-        dbc.Col([
+        dbc.Col([  # Filtro Nome
             html.Label("Nome", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-nome',
@@ -44,7 +44,7 @@ app.layout = dbc.Container([
             )
         ], width=4),
 
-        dbc.Col([
+        dbc.Col([  # Filtro Qt. Vendida
             html.Label("Qt. Vendida", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-qt_vendida',
@@ -105,7 +105,7 @@ def update_graphs(selected_codigos, selected_nomes, selected_vendidas):
 )
 def export_pdf(n_clicks):
     pdf_file = 'report.pdf'
-    pdfkit.from_file('templates/layout.html', pdf_file, configuration=config)
+    pdfkit.from_file('templates/layout.html', pdf_file, configuration=config)  # Verifique se o caminho para o layout.html está correto
     return dcc.send_file(pdf_file)
 
 if __name__ == '__main__':
