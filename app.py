@@ -8,11 +8,13 @@ import pdfkit
 
 # Carregar os dados da planilha Excel
 df = pd.read_excel('planilhas/dados_dia_wine.xlsx', sheet_name='Vendas')
-df.columns = df.columns.str.strip()  # Remover espaços em branco nos nomes das colunas
 print(df.columns.tolist())  # Verifique os nomes das colunas
 
 # Inicializando a aplicação Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
+
+# Configure the path to wkhtmltopdf executable
+config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
 
 # Layout do Dashboard
 app.layout = dbc.Container([
@@ -26,7 +28,7 @@ app.layout = dbc.Container([
             html.Label("Código", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-codigo',
-                options=[{'label': str(codigo), 'value': codigo} for codigo in df['Código'].unique() if pd.notnull(codigo)],
+                options=[{'label': str(codigo), 'value': codigo} for codigo in df['Código'].unique()],
                 multi=True,
                 value=[]
             )
@@ -36,7 +38,7 @@ app.layout = dbc.Container([
             html.Label("Nome", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-nome',
-                options=[{'label': nome, 'value': nome} for nome in df['Nome'].unique() if pd.notnull(nome)],
+                options=[{'label': nome, 'value': nome} for nome in df['Nome'].unique()],
                 multi=True,
                 value=[]
             )
@@ -46,7 +48,7 @@ app.layout = dbc.Container([
             html.Label("Qt. Vendida", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-qt_vendida',
-                options=[{'label': str(vendida), 'value': vendida} for vendida in df['Qt. Vendida'].unique() if pd.notnull(vendida)],
+                options=[{'label': str(vendida), 'value': vendida} for vendida in df['Qt. Vendida'].unique()],
                 multi=True,
                 value=[]
             )
@@ -90,7 +92,7 @@ def update_graphs(selected_codigos, selected_nomes, selected_vendidas):
         filtered_df = filtered_df[filtered_df['Qt. Vendida'].isin(selected_vendidas)]
 
     vendas_fig = px.line(filtered_df, x='Nome', y='Qt. Vendida', title="Vendas por Nome")
-    ticket_medio_fig = px.bar(filtered_df, x='Nome', y='Vl.Vendido', title="Valor Vendido por Nome")
+    ticket_medio_fig = px.bar(filtered_df, x='Nome', y='Vl. Vendido', title="Valor Vendido por Nome")
     mix_vendas_fig = px.pie(filtered_df, names='Nome', values='Qt. Vendida', title="Mix de Vendas")
     positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='Nome', title="Positivação por Vendedor")
 
@@ -103,7 +105,7 @@ def update_graphs(selected_codigos, selected_nomes, selected_vendidas):
 )
 def export_pdf(n_clicks):
     pdf_file = 'report.pdf'
-    pdfkit.from_file('templates/layout.html', pdf_file)
+    pdfkit.from_file('templates/layout.html', pdf_file, configuration=config)
     return dcc.send_file(pdf_file)
 
 if __name__ == '__main__':
