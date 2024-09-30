@@ -16,6 +16,12 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
 # Configure the path to wkhtmltopdf executable
 config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')  # Verifique se este caminho está correto
 
+# Remover os valores NaN da coluna 'Qt. Vendida'
+qt_vendida_unique = df['Qt. Vendida'].dropna().unique()
+
+# Certifique-se de que os valores são convertidos em string
+options_vendida = [{'label': str(vendida), 'value': vendida} for vendida in qt_vendida_unique]
+
 # Layout do Dashboard
 app.layout = dbc.Container([
     dbc.Row([
@@ -48,7 +54,7 @@ app.layout = dbc.Container([
             html.Label("Qt. Vendida", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
                 id='filter-qt_vendida',
-                options=[{'label': str(vendida), 'value': vendida} for vendida in df['Qt. Vendida'].unique()],
+                options=options_vendida,  # Usando a lista corrigida
                 multi=True,
                 value=[]
             )
