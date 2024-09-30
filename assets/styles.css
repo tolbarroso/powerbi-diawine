@@ -1,0 +1,20 @@
+body {
+    background-color: #151D52;
+    font-family: 'Arial', sans-serif;
+}
+
+h1 {
+    color: #F6C62D;
+}
+
+.label {
+    color: #FFFFFF;
+}
+
+button {
+    background-color: #F6C62D;
+    color: #151D52;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+}
