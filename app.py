@@ -25,53 +25,115 @@ app.layout = dbc.Container([
     # Filtros
     dbc.Row([
         dbc.Col([
-            html.Label("RCA"),
-            dcc.Dropdown(
-                id='filter-rca',
-                options=[{'label': rca, 'value': rca} for rca in df['RCA'].unique() if pd.notna(rca)],
-                multi=True,
-                value=[]
-            )
+            html.Label("CNPJ"),
+            dcc.Input(id='filter-cgcent', type='text', placeholder='Digite o CNPJ')
         ], width=2),
 
         dbc.Col([
             html.Label("Código do Cliente"),
             dcc.Dropdown(
-                id='filter-codigo-cliente',
-                options=[{'label': str(cod), 'value': cod} for cod in df['Cod Cliente'].unique() if pd.notna(cod)],
+                id='filter-codcli',
+                options=[{'label': str(cod), 'value': cod} for cod in df['CODCLI'].unique() if pd.notna(cod)],
                 multi=True,
                 value=[]
             )
         ], width=2),
 
         dbc.Col([
-            html.Label("Data de Início"),
-            dcc.DatePickerSingle(id='filter-data-inicio', display_format="DD-MM-YYYY")
+            html.Label("Nome Fantasia"),
+            dcc.Input(id='filter-fantasia', type='text', placeholder='Digite o Nome Fantasia')
         ], width=2),
 
         dbc.Col([
-            html.Label("Data de Fim"),
-            dcc.DatePickerSingle(id='filter-data-fim', display_format="DD-MM-YYYY")
+            html.Label("Nome Real do Cliente"),
+            dcc.Input(id='filter-cliente', type='text', placeholder='Digite o Nome do Cliente')
         ], width=2),
-        
+
+        dbc.Col([
+            html.Label("Bairro"),
+            dcc.Input(id='filter-bairro', type='text', placeholder='Digite o Bairro')
+        ], width=2),
+
+        dbc.Col([
+            html.Label("Município"),
+            dcc.Input(id='filter-municipio', type='text', placeholder='Digite o Município')
+        ], width=2),
+    ], className='mb-4'),
+
+    dbc.Row([
+        dbc.Col([
+            html.Label("Código do Produto"),
+            dcc.Dropdown(
+                id='filter-codprod',
+                options=[{'label': str(cod), 'value': cod} for cod in df['CODPROD'].unique() if pd.notna(cod)],
+                multi=True,
+                value=[]
+            )
+        ], width=2),
+
+        dbc.Col([
+            html.Label("Produto"),
+            dcc.Input(id='filter-produto', type='text', placeholder='Digite o Nome do Produto')
+        ], width=2),
+
+        dbc.Col([
+            html.Label("Embalagem"),
+            dcc.Input(id='filter-embalagem', type='text', placeholder='Digite a Litragem')
+        ], width=2),
+
+        dbc.Col([
+            html.Label("Quantidade"),
+            dcc.Input(id='filter-qt', type='number', placeholder='Quantidade Mínima')
+        ], width=2),
+
+        dbc.Col([
+            html.Label("Valor Total"),
+            dcc.Input(id='filter-total', type='number', placeholder='Valor Total Mínimo')
+        ], width=2),
+
+        dbc.Col([
+            html.Label("RCA"),
+            dcc.Dropdown(
+                id='filter-codusur',
+                options=[{'label': rca, 'value': rca} for rca in df['CODUSUR'].unique() if pd.notna(rca)],
+                multi=True,
+                value=[]
+            )
+        ], width=2),
+    ], className='mb-4'),
+
+    dbc.Row([
+        dbc.Col([
+            html.Label("Vendedor"),
+            dcc.Input(id='filter-vendedor', type='text', placeholder='Digite o Nome do Vendedor')
+        ], width=2),
+
+        dbc.Col([
+            html.Label("Supervisor"),
+            dcc.Input(id='filter-supervisor', type='text', placeholder='Digite o Nome do Supervisor')
+        ], width=2),
+
         dbc.Col([
             html.Label("Departamento"),
             dcc.Dropdown(
-                id='filter-departamento',
-                options=[{'label': dep, 'value': dep} for dep in df['Departamento'].unique() if pd.notna(dep)],
+                id='filter-depto',
+                options=[{'label': dep, 'value': dep} for dep in df['DEPARTAMENTO'].unique() if pd.notna(dep)],
                 multi=True,
                 value=[]
             )
         ], width=2),
 
         dbc.Col([
-            html.Label("Fornecedor"),
-            dcc.Dropdown(
-                id='filter-fornecedor',
-                options=[{'label': forn, 'value': forn} for forn in df['Fornecedor'].unique() if pd.notna(forn)],
-                multi=True,
-                value=[]
+            html.Label("Data de Faturamento"),
+            dcc.DatePickerRange(
+                id='filter-dtfat',
+                display_format="DD-MM-YYYY"
             )
+        ], width=4),
+
+        dbc.Col([
+            html.Label("Ramo"),
+            dcc.Input(id='filter-ramo', type='text', placeholder='Digite o Ramo')
         ], width=2)
     ], className='mb-4'),
 
@@ -95,49 +157,82 @@ app.layout = dbc.Container([
      Output('clientes-grafico', 'figure'),
      Output('positivacao-grafico', 'figure'),
      Output('meta-vendas-grafico', 'figure')],
-    [Input('filter-rca', 'value'),
-     Input('filter-codigo-cliente', 'value'),
-     Input('filter-data-inicio', 'date'),
-     Input('filter-data-fim', 'date'),
-     Input('filter-departamento', 'value'),
-     Input('filter-fornecedor', 'value')]
+    [Input('filter-cgcent', 'value'),
+     Input('filter-codcli', 'value'),
+     Input('filter-fantasia', 'value'),
+     Input('filter-cliente', 'value'),
+     Input('filter-bairro', 'value'),
+     Input('filter-municipio', 'value'),
+     Input('filter-codprod', 'value'),
+     Input('filter-produto', 'value'),
+     Input('filter-embalagem', 'value'),
+     Input('filter-qt', 'value'),
+     Input('filter-total', 'value'),
+     Input('filter-codusur', 'value'),
+     Input('filter-vendedor', 'value'),
+     Input('filter-supervisor', 'value'),
+     Input('filter-depto', 'value'),
+     Input('filter-dtfat', 'start_date'),
+     Input('filter-dtfat', 'end_date'),
+     Input('filter-ramo', 'value')]
 )
-def update_graphs(selected_rcas, selected_clientes, start_date, end_date, selected_departamentos, selected_fornecedores):
+def update_graphs(cgcent, selected_clientes, fantasia, cliente, bairro, municipio, selected_produtos, produto,
+                   embalagem, qt, total, selected_rcas, vendedor, supervisor, selected_departamentos, start_date, end_date, ramo):
     filtered_df = df
 
     # Aplicando os filtros
-    if selected_rcas:
-        filtered_df = filtered_df[filtered_df['RCA'].isin(selected_rcas)]
+    if cgcent:
+        filtered_df = filtered_df[filtered_df['CGCENT'].str.contains(cgcent)]
     if selected_clientes:
-        filtered_df = filtered_df[filtered_df['Cod Cliente'].isin(selected_clientes)]
-    if start_date and end_date:
-        filtered_df = filtered_df[(filtered_df['Data'] >= start_date) & (filtered_df['Data'] <= end_date)]
+        filtered_df = filtered_df[filtered_df['CODCLI'].isin(selected_clientes)]
+    if fantasia:
+        filtered_df = filtered_df[filtered_df['FANTASIA'].str.contains(fantasia)]
+    if cliente:
+        filtered_df = filtered_df[filtered_df['CLIENTE'].str.contains(cliente)]
+    if bairro:
+        filtered_df = filtered_df[filtered_df['BAIRRO'].str.contains(bairro)]
+    if municipio:
+        filtered_df = filtered_df[filtered_df['MUNICIPIO'].str.contains(municipio)]
+    if selected_produtos:
+        filtered_df = filtered_df[filtered_df['CODPROD'].isin(selected_produtos)]
+    if produto:
+        filtered_df = filtered_df[filtered_df['PRODUTO'].str.contains(produto)]
+    if embalagem:
+        filtered_df = filtered_df[filtered_df['EMBALAGEM'].str.contains(embalagem)]
+    if qt:
+        filtered_df = filtered_df[filtered_df['QT'] >= qt]
+    if total:
+        filtered_df = filtered_df[filtered_df['TOTAL'] >= total]
+    if selected_rcas:
+        filtered_df = filtered_df[filtered_df['CODUSUR'].isin(selected_rcas)]
+    if vendedor:
+        filtered_df = filtered_df[filtered_df['VENDEDOR'].str.contains(vendedor)]
+    if supervisor:
+        filtered_df = filtered_df[filtered_df['SUPERVISOR'].str.contains(supervisor)]
     if selected_departamentos:
-        filtered_df = filtered_df[filtered_df['Departamento'].isin(selected_departamentos)]
-    if selected_fornecedores:
-        filtered_df = filtered_df[filtered_df['Fornecedor'].isin(selected_fornecedores)]
+        filtered_df = filtered_df[filtered_df['DEPARTAMENTO'].isin(selected_departamentos)]
+    if start_date and end_date:
+        filtered_df = filtered_df[(filtered_df['DTFAT'] >= start_date) & (filtered_df['DTFAT'] <= end_date)]
+    if ramo:
+        filtered_df = filtered_df[filtered_df['RAMO'].str.contains(ramo)]
 
-    # Gráficos atualizados com base nos filtros aplicados
-    vendas_fig = px.line(filtered_df, x='Data', y='Valor', title="Valor Geral de Vendas", 
-                          template='plotly_white')  # Adicionando um template
-    clientes_fig = px.pie(filtered_df, names='Cod Cliente', values='Qt. Vendida', title="Número de Clientes Compradores",
-                           template='plotly_white')  # Adicionando um template
-    positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='RCA', 
-                                  title="Positivação por Vendedor", template='plotly_white')  # Adicionando um template
-    meta_vendas_fig = px.bar(filtered_df, x='Data', y='Vl Meta', title="Meta X Vendas Reais Atuais",
-                              template='plotly_white')  # Adicionando um template
+    # Criar gráficos
+    vendas_fig = px.bar(filtered_df, x='PRODUTO', y='TOTAL', title='Total de Vendas por Produto')
+    clientes_fig = px.bar(filtered_df, x='CLIENTE', y='QT', title='Total de Clientes por Produto')
+    positivacao_fig = px.line(filtered_df, x='DTFAT', y='QT', title='Positivação por Vendedor')
+    meta_vendas_fig = px.bar(filtered_df, x='DEPARTAMENTO', y='QT', title='Meta X Vendas Reais por Departamento')
 
     return vendas_fig, clientes_fig, positivacao_fig, meta_vendas_fig
 
 @app.callback(
-    Output('download-pdf', 'data'),
-    [Input('btn-export-pdf', 'n_clicks')],
-    prevent_initial_call=True
+    Output("btn-export-pdf", "n_clicks"),
+    Input("btn-export-pdf", "n_clicks"),
 )
 def export_pdf(n_clicks):
-    pdf_file = 'report.pdf'
-    pdfkit.from_file('templates/layout.html', pdf_file, configuration=config)
-    return dcc.send_file(pdf_file)
+    if n_clicks:
+        # Aqui você pode implementar a lógica de exportação em PDF usando pdfkit
+        # Crie um HTML a partir do layout atual e gere um PDF
+        pass  # Implementar lógica para exportar PDF
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run_server(debug=True)
