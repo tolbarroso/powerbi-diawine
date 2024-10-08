@@ -1,14 +1,19 @@
 body {
     background-color: #151D52;
-    font-family: 'Arial', sans-serif;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 h1 {
     color: #F6C62D;
+    font-size: 2em;
 }
 
 .label {
     color: #FFFFFF;
+}
+
+.checkbox-label label {
+    color: #F6C62D;
 }
 
 button {
@@ -17,4 +22,5 @@ button {
     border: none;
     padding: 10px;
     font-size: 16px;
+    margin-top: 10px;
 }

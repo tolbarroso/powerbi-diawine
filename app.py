@@ -1,21 +1,19 @@
 import dash
-from dash import dcc, html 
-import dash_bootstrap_components as dbc  
-import pandas as pd  
-import plotly.express as px  
-from dash.dependencies import Input, Output  
-import pdfkit  
+from dash import dcc, html
+import dash_bootstrap_components as dbc
+import pandas as pd
+import plotly.express as px
+from dash.dependencies import Input, Output
+import pdfkit
 
 # Carregar os dados da planilha Excel
 df = pd.read_excel('planilhas/dados_dia_wine.xlsx', sheet_name='Vendas')
-print("Colunas do DataFrame:", df.columns.tolist())  # Verifique os nomes das colunas
-print("Dados carregados:", df.head())  # Verifique se os dados estão corretos
 
 # Inicializando a aplicação Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
 
-# Configure the path to wkhtmltopdf executable
-config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')  # Verifique se este caminho está correto
+# Configure o caminho para o executável wkhtmltopdf
+config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
 
 # Layout do Dashboard
 app.layout = dbc.Container([
@@ -25,81 +23,95 @@ app.layout = dbc.Container([
     ], justify="between", align="center", className='mb-4'),
 
     dbc.Row([
-        dbc.Col([  # Filtro Código
-            html.Label("Código", style={'color': '#FFFFFF'}),
+        dbc.Col([
+            html.Label("RCA", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
-                id='filter-codigo',
-                options=[{'label': str(codigo), 'value': codigo} for codigo in df['Código'].unique() if pd.notna(codigo)],
+                id='filter-rca',
+                options=[{'label': rca, 'value': rca} for rca in df['RCA'].unique() if pd.notna(rca)],
                 multi=True,
                 value=[]
             )
-        ], width=4),
+        ], width=3),
+
+        dbc.Col([
+            html.Label("Código do Cliente", style={'color': '#FFFFFF'}),
+            dcc.Dropdown(
+                id='filter-codigo-cliente',
+                options=[{'label': str(cod), 'value': cod} for cod in df['Cod Cliente'].unique() if pd.notna(cod)],
+                multi=True,
+                value=[]
+            )
+        ], width=3),
+
+        dbc.Col([
+            html.Label("Data de Início", style={'color': '#FFFFFF'}),
+            dcc.DatePickerSingle(id='filter-data-inicio', display_format="DD-MM-YYYY", placeholder="Data de Início")
+        ], width=3),
+
+        dbc.Col([
+            html.Label("Data de Fim", style={'color': '#FFFFFF'}),
+            dcc.DatePickerSingle(id='filter-data-fim', display_format="DD-MM-YYYY", placeholder="Data de Fim")
+        ], width=3),
         
-        dbc.Col([  # Filtro Nome
-            html.Label("Nome", style={'color': '#FFFFFF'}),
+        dbc.Col([
+            html.Label("Departamento", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
-                id='filter-nome',
-                options=[{'label': nome, 'value': nome} for nome in df['Nome'].unique() if pd.notna(nome)],
+                id='filter-departamento',
+                options=[{'label': dep, 'value': dep} for dep in df['Departamento'].unique() if pd.notna(dep)],
                 multi=True,
                 value=[]
             )
-        ], width=4),
+        ], width=3),
 
-        dbc.Col([  # Filtro Qt. Vendida
-            html.Label("Qt. Vendida", style={'color': '#FFFFFF'}),
+        dbc.Col([
+            html.Label("Fornecedor", style={'color': '#FFFFFF'}),
             dcc.Dropdown(
-                id='filter-qt_vendida',
-                options=[{'label': str(vendida), 'value': vendida} for vendida in df['Qt. Vendida'].unique() if pd.notna(vendida)],
+                id='filter-fornecedor',
+                options=[{'label': forn, 'value': forn} for forn in df['Fornecedor'].unique() if pd.notna(forn)],
                 multi=True,
                 value=[]
             )
-        ], width=4)
+        ], width=3)
     ], className='mb-4'),
 
-    dbc.Row([
-        dbc.Col(dcc.Graph(id='vendas-periodo'), width=6),
-        dbc.Col(dcc.Graph(id='ticket-medio'), width=6)
-    ], className='mb-4'),
-
-    dbc.Row([
-        dbc.Col(dcc.Graph(id='mix-vendas'), width=6),
-        dbc.Col(dcc.Graph(id='positivacao'), width=6)
-    ], className='mb-4'),
-
-    dbc.Row([
-        dbc.Col(html.Button("Exportar PDF", id="btn-export-pdf", className="btn btn-warning"), width={"size": 3, "offset": 9})
-    ]),
-
-    dcc.Download(id='download-pdf')
+    # Seus gráficos aqui
 ], fluid=True, style={'backgroundColor': '#151D52'})
 
+# Callbacks para atualizar os gráficos e exportar PDF
 @app.callback(
     [Output('vendas-periodo', 'figure'),
-     Output('ticket-medio', 'figure'),
-     Output('mix-vendas', 'figure'),
-     Output('positivacao', 'figure')],
-    [Input('filter-codigo', 'value'),
-     Input('filter-nome', 'value'),
-     Input('filter-qt_vendida', 'value')]
+     Output('clientes-compradores', 'figure'),
+     Output('positivacao', 'figure'),
+     Output('meta-vendas', 'figure')],
+    [Input('filter-rca', 'value'),
+     Input('filter-codigo-cliente', 'value'),
+     Input('filter-data-inicio', 'date'),
+     Input('filter-data-fim', 'date'),
+     Input('filter-departamento', 'value'),
+     Input('filter-fornecedor', 'value')]
 )
-def update_graphs(selected_codigos, selected_nomes, selected_vendidas):
+def update_graphs(selected_rcas, selected_clientes, start_date, end_date, selected_departamentos, selected_fornecedores):
     filtered_df = df
 
-    if selected_codigos:
-        filtered_df = filtered_df[filtered_df['Código'].isin(selected_codigos)]
-    if selected_nomes:
-        filtered_df = filtered_df[filtered_df['Nome'].isin(selected_nomes)]
-    if selected_vendidas:
-        filtered_df = filtered_df[filtered_df['Qt. Vendida'].isin(selected_vendidas)]
+    # Aplicando os filtros
+    if selected_rcas:
+        filtered_df = filtered_df[filtered_df['RCA'].isin(selected_rcas)]
+    if selected_clientes:
+        filtered_df = filtered_df[filtered_df['Cod Cliente'].isin(selected_clientes)]
+    if start_date and end_date:
+        filtered_df = filtered_df[(filtered_df['Data'] >= start_date) & (filtered_df['Data'] <= end_date)]
+    if selected_departamentos:
+        filtered_df = filtered_df[filtered_df['Departamento'].isin(selected_departamentos)]
+    if selected_fornecedores:
+        filtered_df = filtered_df[filtered_df['Fornecedor'].isin(selected_fornecedores)]
 
-    print("Dados filtrados:", filtered_df.head())  # Adicione isso para verificar o DataFrame filtrado
+    # Gráficos atualizados com base nos filtros aplicados
+    vendas_fig = px.bar(filtered_df, x='RCA', y='Valor', title="Valor Geral de Vendas")
+    clientes_fig = px.pie(filtered_df, names='Cod Cliente', values='Qt. Vendida', title="Número de Clientes Compradores")
+    positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='RCA', title="Positivação por Vendedor")
+    meta_vendas_fig = px.line(filtered_df, x='Data', y='Vl Meta', title="Meta X Vendas Reais Atuais")
 
-    vendas_fig = px.line(filtered_df, x='Nome', y='Qt. Vendida', title="Vendas por Nome")
-    ticket_medio_fig = px.bar(filtered_df, x='Nome', y='Vl.Vendido', title="Valor Vendido por Nome")  # Correção aqui
-    mix_vendas_fig = px.pie(filtered_df, names='Nome', values='Qt. Vendida', title="Mix de Vendas")
-    positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='Nome', title="Positivação por Vendedor")
-
-    return vendas_fig, ticket_medio_fig, mix_vendas_fig, positivacao_fig
+    return vendas_fig, clientes_fig, positivacao_fig, meta_vendas_fig
 
 @app.callback(
     Output('download-pdf', 'data'),
@@ -108,7 +120,7 @@ def update_graphs(selected_codigos, selected_nomes, selected_vendidas):
 )
 def export_pdf(n_clicks):
     pdf_file = 'report.pdf'
-    pdfkit.from_file('templates/layout.html', pdf_file, configuration=config)  # Verifique se o caminho para o layout.html está correto
+    pdfkit.from_file('templates/layout.html', pdf_file, configuration=config)
     return dcc.send_file(pdf_file)
 
 if __name__ == '__main__':
