@@ -74,15 +74,26 @@ app.layout = dbc.Container([
         ], width=3)
     ], className='mb-4'),
 
-    # Seus gráficos aqui
+    # Gráficos
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='vendas-grafico'), width=6),
+        dbc.Col(dcc.Graph(id='clientes-grafico'), width=6),
+    ], className='mb-4'),
+
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='positivacao-grafico'), width=6),
+        dbc.Col(dcc.Graph(id='meta-vendas-grafico'), width=6),
+    ], className='mb-4'),
+
+    dbc.Button("Exportar PDF", id="btn-export-pdf", color="primary"),
 ], fluid=True, style={'backgroundColor': '#151D52'})
 
 # Callbacks para atualizar os gráficos e exportar PDF
 @app.callback(
-    [Output('vendas-periodo', 'figure'),
-     Output('clientes-compradores', 'figure'),
-     Output('positivacao', 'figure'),
-     Output('meta-vendas', 'figure')],
+    [Output('vendas-grafico', 'figure'),
+     Output('clientes-grafico', 'figure'),
+     Output('positivacao-grafico', 'figure'),
+     Output('meta-vendas-grafico', 'figure')],
     [Input('filter-rca', 'value'),
      Input('filter-codigo-cliente', 'value'),
      Input('filter-data-inicio', 'date'),
@@ -106,10 +117,10 @@ def update_graphs(selected_rcas, selected_clientes, start_date, end_date, select
         filtered_df = filtered_df[filtered_df['Fornecedor'].isin(selected_fornecedores)]
 
     # Gráficos atualizados com base nos filtros aplicados
-    vendas_fig = px.bar(filtered_df, x='RCA', y='Valor', title="Valor Geral de Vendas")
+    vendas_fig = px.line(filtered_df, x='Data', y='Valor', title="Valor Geral de Vendas")
     clientes_fig = px.pie(filtered_df, names='Cod Cliente', values='Qt. Vendida', title="Número de Clientes Compradores")
     positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='RCA', title="Positivação por Vendedor")
-    meta_vendas_fig = px.line(filtered_df, x='Data', y='Vl Meta', title="Meta X Vendas Reais Atuais")
+    meta_vendas_fig = px.bar(filtered_df, x='Data', y='Vl Meta', title="Meta X Vendas Reais Atuais")
 
     return vendas_fig, clientes_fig, positivacao_fig, meta_vendas_fig
 
