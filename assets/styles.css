@@ -1,26 +1,17 @@
 body {
-    background-color: #151D52;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-family: 'Arial', sans-serif;
 }
 
 h1 {
-    color: #F6C62D;
-    font-size: 2em;
+    font-size: 2.5rem;
 }
 
-.label {
-    color: #FFFFFF;
+label {
+    font-weight: bold;
+    color: #007BFF; /* Cor dos rótulos dos filtros */
 }
 
-.checkbox-label label {
-    color: #F6C62D;
-}
-
-button {
-    background-color: #F6C62D;
-    color: #151D52;
-    border: none;
-    padding: 10px;
-    font-size: 16px;
-    margin-top: 10px;
+.dropdown {
+    background-color: #ffffff; /* Fundo branco para dropdowns */
+    border: 1px solid #007BFF; /* Borda azul */
 }

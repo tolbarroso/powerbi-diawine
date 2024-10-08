@@ -10,7 +10,7 @@ import pdfkit
 df = pd.read_excel('planilhas/dados_dia_wine.xlsx', sheet_name='Vendas')
 
 # Inicializando a aplicação Dash
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])  # Alterado para usar Bootstrap padrão
 
 # Configure o caminho para o executável wkhtmltopdf
 config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
@@ -19,59 +19,60 @@ config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkh
 app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(html.Img(src=app.get_asset_url('logo.png'), height="60px"), width="auto"),
-        dbc.Col(html.H1("Dashboard Dia Wine", style={'color': '#F6C62D', 'textAlign': 'center'}), width=True)
+        dbc.Col(html.H1("Dashboard Dia Wine", style={'color': '#007BFF', 'textAlign': 'center'}), width=True)
     ], justify="between", align="center", className='mb-4'),
 
+    # Filtros
     dbc.Row([
         dbc.Col([
-            html.Label("RCA", style={'color': '#FFFFFF'}),
+            html.Label("RCA"),
             dcc.Dropdown(
                 id='filter-rca',
                 options=[{'label': rca, 'value': rca} for rca in df['RCA'].unique() if pd.notna(rca)],
                 multi=True,
                 value=[]
             )
-        ], width=3),
+        ], width=2),
 
         dbc.Col([
-            html.Label("Código do Cliente", style={'color': '#FFFFFF'}),
+            html.Label("Código do Cliente"),
             dcc.Dropdown(
                 id='filter-codigo-cliente',
                 options=[{'label': str(cod), 'value': cod} for cod in df['Cod Cliente'].unique() if pd.notna(cod)],
                 multi=True,
                 value=[]
             )
-        ], width=3),
+        ], width=2),
 
         dbc.Col([
-            html.Label("Data de Início", style={'color': '#FFFFFF'}),
-            dcc.DatePickerSingle(id='filter-data-inicio', display_format="DD-MM-YYYY", placeholder="Data de Início")
-        ], width=3),
+            html.Label("Data de Início"),
+            dcc.DatePickerSingle(id='filter-data-inicio', display_format="DD-MM-YYYY")
+        ], width=2),
 
         dbc.Col([
-            html.Label("Data de Fim", style={'color': '#FFFFFF'}),
-            dcc.DatePickerSingle(id='filter-data-fim', display_format="DD-MM-YYYY", placeholder="Data de Fim")
-        ], width=3),
+            html.Label("Data de Fim"),
+            dcc.DatePickerSingle(id='filter-data-fim', display_format="DD-MM-YYYY")
+        ], width=2),
         
         dbc.Col([
-            html.Label("Departamento", style={'color': '#FFFFFF'}),
+            html.Label("Departamento"),
             dcc.Dropdown(
                 id='filter-departamento',
                 options=[{'label': dep, 'value': dep} for dep in df['Departamento'].unique() if pd.notna(dep)],
                 multi=True,
                 value=[]
             )
-        ], width=3),
+        ], width=2),
 
         dbc.Col([
-            html.Label("Fornecedor", style={'color': '#FFFFFF'}),
+            html.Label("Fornecedor"),
             dcc.Dropdown(
                 id='filter-fornecedor',
                 options=[{'label': forn, 'value': forn} for forn in df['Fornecedor'].unique() if pd.notna(forn)],
                 multi=True,
                 value=[]
             )
-        ], width=3)
+        ], width=2)
     ], className='mb-4'),
 
     # Gráficos
@@ -86,7 +87,7 @@ app.layout = dbc.Container([
     ], className='mb-4'),
 
     dbc.Button("Exportar PDF", id="btn-export-pdf", color="primary"),
-], fluid=True, style={'backgroundColor': '#151D52'})
+], fluid=True, style={'backgroundColor': '#F8F9FA'})  # Fundo claro
 
 # Callbacks para atualizar os gráficos e exportar PDF
 @app.callback(
@@ -117,10 +118,14 @@ def update_graphs(selected_rcas, selected_clientes, start_date, end_date, select
         filtered_df = filtered_df[filtered_df['Fornecedor'].isin(selected_fornecedores)]
 
     # Gráficos atualizados com base nos filtros aplicados
-    vendas_fig = px.line(filtered_df, x='Data', y='Valor', title="Valor Geral de Vendas")
-    clientes_fig = px.pie(filtered_df, names='Cod Cliente', values='Qt. Vendida', title="Número de Clientes Compradores")
-    positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='RCA', title="Positivação por Vendedor")
-    meta_vendas_fig = px.bar(filtered_df, x='Data', y='Vl Meta', title="Meta X Vendas Reais Atuais")
+    vendas_fig = px.line(filtered_df, x='Data', y='Valor', title="Valor Geral de Vendas", 
+                          template='plotly_white')  # Adicionando um template
+    clientes_fig = px.pie(filtered_df, names='Cod Cliente', values='Qt. Vendida', title="Número de Clientes Compradores",
+                           template='plotly_white')  # Adicionando um template
+    positivacao_fig = px.scatter(filtered_df, x='Qt. Vendida', y='% Pos.', color='RCA', 
+                                  title="Positivação por Vendedor", template='plotly_white')  # Adicionando um template
+    meta_vendas_fig = px.bar(filtered_df, x='Data', y='Vl Meta', title="Meta X Vendas Reais Atuais",
+                              template='plotly_white')  # Adicionando um template
 
     return vendas_fig, clientes_fig, positivacao_fig, meta_vendas_fig
 
