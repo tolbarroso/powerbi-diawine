@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 import pdfkit
 
 # Carregar os dados da planilha Excel
-df = pd.read_excel('planilhas/dados_dia_wine.xlsx', sheet_name='Vendas')
+df = pd.read_excel('planilhas/dados_dia_wine.xls', sheet_name='planilha')
 
 # Inicializando a aplicação Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])  # Usando Bootstrap
