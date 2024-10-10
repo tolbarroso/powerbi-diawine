@@ -13,11 +13,16 @@ from flask import send_file
 # Carregar os dados da planilha Excel
 df = pd.read_excel('planilhas/dados_dia_wine.xls', sheet_name='planilha')
 
-# Função para encurtar os nomes
+# Função para encurtar os nomes, lidando com valores nulos ou NaN
 def abreviar_nome(nome, max_length=15):
-    if len(nome) > max_length:
-        return nome[:max_length] + '...'
-    return nome
+    if pd.isna(nome):
+        return ''
+    if isinstance(nome, str):  
+        if len(nome) > max_length:
+            return nome[:max_length] + '...'
+        return nome
+    else:
+        return str(nome) 
 
 # Aplicar a função de abreviação nos campos "PRODUTO" e "NOME FANTASIA"
 df['PRODUTO ABV'] = df['PRODUTO'].apply(lambda x: abreviar_nome(x))
@@ -55,7 +60,7 @@ app.layout = dbc.Container([
                  options=[{'label': dept, 'value': dept} for dept in df['DEPARTAMENTO'].unique()],
                  multi=True)], width=2),
         
-        dbc.Col([html.Label("Data de Fat"), dcc.DatePickerRange(id='filter-dtfat', display_format="DD-MM-YYYY")], width=2),
+        dbc.Col([html.Label("Data de Fat"), dcc.DatePickerRange(id='filter-dtfat ', display_format="DD-MM-YYYY")], width=2),
         
         dbc.Col([html.Label("Seguimento"), dcc.Dropdown(id='filter-seguimento',
                  options=[{'label': seg, 'value': seg} for seg in df['SEGUIMENTO'].unique()],
@@ -118,8 +123,15 @@ def update_graphs(selected_clientes, selected_produtos, selected_rcas, selected_
 )
 def export_pdf(n_clicks):
     if n_clicks:
-        options = {'page-size': 'A4', 'encoding': 'UTF-8'}
         try:
+            # Criar um arquivo HTML com o layout do dashboard
+            html_layout = app.layout
+            html_string = html_layout.to_html()
+            with open('templates/layout.html', 'w') as f:
+                f.write(html_string)
+            
+            # Exportar o arquivo HTML para PDF
+            options = {'page-size': 'A4', 'encoding': 'UTF-8'}
             pdfkit.from_file('templates/layout.html', 'dashboard_dia_wine.pdf', configuration=config, options=options)
             print("PDF exportado com sucesso!")
         except Exception as e:
