@@ -1,72 +1,68 @@
 import dash
-from dash import dcc, html, Input, Output
+from dash import dcc, html
+import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
+from dash.dependencies import Input, Output
+import pdfkit
 
-# Inicializar o app
-app = dash.Dash(__name__)
+# Carregar os dados da planilha Excel
+df = pd.read_excel('planilhas/dados_dia_wine.xls', sheet_name='planilha')
 
-# Carregar dados
-df = pd.read_excel("dados_vendas.xlsx")
+# Inicializando a aplicação Dash com tema Bootstrap
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-# Layout do app
-app.layout = html.Div(
-    style={'backgroundColor': '#151D52', 'color': '#FFFFFF', 'font-family': 'Arial, sans-serif'},
-    children=[
-        html.H1("Relatório Dia Wine", style={'textAlign': 'center', 'color': '#F6C62D'}),
+# Configuração para pdfkit
+config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+
+# Layout do Dashboard com fundo preto
+app.layout = dbc.Container([
+    dbc.Row([
+        dbc.Col(html.Img(src=app.get_asset_url('logo.png'), height="60px"), width="auto"),
+        dbc.Col(html.H1("Dashboard Dia Wine", style={'color': '#F6C62D', 'textAlign': 'center'}), width=True)
+    ], justify="between", align="center", className='mb-4'),
+
+    # Filtros simplificados
+    dbc.Row([
+        dbc.Col([html.Label("Cód. Cliente"), dcc.Dropdown(id='filter-codcli',
+                 options=[{'label': str(cod), 'value': cod} for cod in df['COD CLIENTE'].unique()],
+                 multi=True)], width=2),
         
-        # Filtros
-        html.Div([
-            html.Label("Código do Cliente:"),
-            dcc.Dropdown(
-                id='filter-codcli',
-                options=[{'label': str(cod), 'value': cod} for cod in df['COD CLIENTE'].unique()],
-                multi=True
-            ),
-            html.Label("Código do Produto:"),
-            dcc.Dropdown(
-                id='filter-codprod',
-                options=[{'label': str(prod), 'value': prod} for prod in df['COD PROD'].unique()],
-                multi=True
-            ),
-            html.Label("RCA:"),
-            dcc.Dropdown(
-                id='filter-rca',
-                options=[{'label': str(rca), 'value': rca} for rca in df['RCA'].unique()],
-                multi=True
-            ),
-            html.Label("Departamento:"),
-            dcc.Dropdown(
-                id='filter-depto',
-                options=[{'label': str(depto), 'value': depto} for depto in df['DEPARTAMENTO'].unique()],
-                multi=True
-            ),
-            html.Label("Data de Faturamento:"),
-            dcc.DatePickerRange(
-                id='filter-dtfat',
-                start_date=df['DT FAT'].min(),
-                end_date=df['DT FAT'].max()
-            ),
-            html.Label("Seguimento:"),
-            dcc.Dropdown(
-                id='filter-seguimento',
-                options=[{'label': seg, 'value': seg} for seg in df['SEGUIMENTO'].unique()],
-                multi=True
-            ),
-        ], style={'width': '25%', 'display': 'inline-block', 'padding': '10px', 'backgroundColor': '#1E2747'}),
+        dbc.Col([html.Label("Cód. Produto"), dcc.Dropdown(id='filter-codprod',
+                 options=[{'label': str(cod), 'value': cod} for cod in df['COD PROD'].unique()],
+                 multi=True)], width=2),
         
-        # Gráficos
-        html.Div([
-            dcc.Graph(id='vendas-grafico'),
-            dcc.Graph(id='clientes-grafico'),
-            dcc.Graph(id='positivacao-grafico'),
-            dcc.Graph(id='meta-vendas-grafico')
-        ], style={'width': '70%', 'display': 'inline-block', 'padding': '10px'}),
-    ]
-)
+        dbc.Col([html.Label("RCA"), dcc.Dropdown(id='filter-rca',
+                 options=[{'label': rca, 'value': rca} for rca in df['RCA'].unique()],
+                 multi=True)], width=2),
+        
+        dbc.Col([html.Label("Departamento"), dcc.Dropdown(id='filter-depto',
+                 options=[{'label': dept, 'value': dept} for dept in df['DEPARTAMENTO'].unique()],
+                 multi=True)], width=2),
+        
+        dbc.Col([html.Label("Data de Fat"), dcc.DatePickerRange(id='filter-dtfat', display_format="DD-MM-YYYY")], width=2),
+        
+        dbc.Col([html.Label("Seguimento"), dcc.Dropdown(id='filter-seguimento',
+                 options=[{'label': seg, 'value': seg} for seg in df['SEGUIMENTO'].unique()],
+                 multi=True)], width=2),
+    ], className='mb-4'),
 
-# Função de callback para atualizar os gráficos
+    # Gráficos
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='vendas-grafico'), width=6),
+        dbc.Col(dcc.Graph(id='clientes-grafico'), width=6)
+    ], className='mb-4'),
+    
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='positivacao-grafico'), width=6),
+        dbc.Col(dcc.Graph(id='meta-vendas-grafico'), width=6)
+    ], className='mb-4'),
+    
+    dbc.Button("Exportar PDF", id="btn-export-pdf", color="primary", className='mt-4')
+], fluid=True, style={'backgroundColor': '#000000'})  # Fundo preto
+
+# Callbacks para atualizar os gráficos e salvar as imagens
 @app.callback(
     [Output('vendas-grafico', 'figure'),
      Output('clientes-grafico', 'figure'),
@@ -88,7 +84,7 @@ def update_graphs(selected_clientes, selected_produtos, selected_rcas, selected_
     
     # Criação de gráficos simplificados
     vendas_fig = px.bar(filtered_df, x='PRODUTO', y='TOTAL', title='Vendas por Produto', text_auto=True)
-    clientes_fig = px.bar(filtered_df, x='NOME FANTASIA', y='QT', title='Clientes por Produto', text_auto=True)
+    clientes_fig = px.bar(filtered_df, x='CLIENTE', y='QT', title='Clientes por Produto', text_auto=True)
     positivacao_fig = px.line(filtered_df, x='DT FAT', y='QT', title='Positivação por Período')
     meta_vendas_fig = px.bar(filtered_df, x='DEPARTAMENTO', y='TOTAL', title='Meta x Vendas', text_auto=True)
 
@@ -104,6 +100,17 @@ def update_graphs(selected_clientes, selected_produtos, selected_rcas, selected_
 
     return vendas_fig, clientes_fig, positivacao_fig, meta_vendas_fig
 
-# Executar o servidor
+# Callback para exportar o PDF
+@app.callback(
+    Output('btn-export-pdf', 'n_clicks'),
+    Input('btn-export-pdf', 'n_clicks'),
+    prevent_initial_call=True
+)
+def export_pdf(n_clicks):
+    options = {'page-size': 'A4', 'encoding': 'UTF-8'}
+    pdfkit.from_file('templates/layout.html', 'dashboard_dia_wine.pdf', configuration=config, options=options)
+    return None
+
+# Executar a aplicação
 if __name__ == '__main__':
     app.run_server(debug=True)
